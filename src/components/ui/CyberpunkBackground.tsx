@@ -58,6 +58,95 @@ const fragmentShader = /* glsl */ `
     return dist / min(resolution.x, resolution.y);
   }
 
+  // Check if point is inside a rectangle
+  bool isInRect(vec2 p, vec2 center, vec2 size) {
+    vec2 d = abs(p - center) - size * 0.5;
+    return d.x <= 0.0 && d.y <= 0.0;
+  }
+
+  // Pseudo-random based on vec3
+  float hash3(vec3 p) {
+    return fract(sin(dot(p, vec3(127.1, 311.7, 74.7))) * 43758.5453123);
+  }
+
+  // Generate window pattern for a building
+  float getWindowBrightness(vec2 uv, float buildingId, float x1, float x2, float buildingTop) {
+    float baseline = 0.25;
+    
+    // Only draw windows if building is tall enough and not at baseline
+    if (buildingTop <= baseline + 0.05) return 0.0;
+    
+    // First check: is the current pixel actually inside the building bounds?
+    if (uv.x < x1 || uv.x > x2 || uv.y < baseline || uv.y > buildingTop) {
+      return 0.0; // Outside building bounds
+    }
+    
+    // Window grid parameters
+    vec2 windowSize = vec2(0.020, 0.050); // Large window dimensions (2.5:1 ratio)
+    vec2 windowSpacing = vec2(0.022, 0.055); // Tight spacing for thin separator lines
+    
+    // Building dimensions
+    float buildingWidth = x2 - x1;
+    float buildingHeight = buildingTop - baseline;
+    
+    // Building dimensions with padding from edges
+    vec2 padding = vec2(0.015, 0.020); // Horizontal and vertical padding from building edges
+    float paddedWidth = buildingWidth - 2.0 * padding.x;
+    float paddedHeight = buildingHeight - 2.0 * padding.y;
+    
+    // Skip if building too small for padded windows
+    if (paddedWidth <= 0.0 || paddedHeight <= 0.0) return 0.0;
+    
+    // Calculate window grid within padded area
+    float windowsPerRow = floor(paddedWidth / windowSpacing.x);
+    float windowRows = floor(paddedHeight / windowSpacing.y);
+    
+    // Skip if building too small for windows
+    if (windowsPerRow < 1.0 || windowRows < 1.0) return 0.0;
+    
+    // Check if we're within the padded window area
+    vec2 paddedStart = vec2(x1 + padding.x, baseline + padding.y);
+    vec2 paddedEnd = vec2(x2 - padding.x, buildingTop - padding.y);
+    
+    if (uv.x < paddedStart.x || uv.x > paddedEnd.x || uv.y < paddedStart.y || uv.y > paddedEnd.y) {
+      return 0.0; // Outside padded window area
+    }
+    
+    // Convert UV to padded building-local coordinates (0-1 range within padded area)
+    vec2 buildingUV = vec2(
+      (uv.x - paddedStart.x) / paddedWidth,
+      (uv.y - paddedStart.y) / paddedHeight
+    );
+    
+    // Window grid coordinates
+    vec2 windowGrid = buildingUV * vec2(windowsPerRow, windowRows);
+    vec2 windowIndex = floor(windowGrid);
+    vec2 windowLocalUV = fract(windowGrid);
+    
+    // Center the window in its cell
+    vec2 windowCenter = vec2(0.5);
+    // Calculate window size to nearly fill the grid cell, leaving thin separator lines
+    vec2 cellSize = vec2(paddedWidth / windowsPerRow, paddedHeight / windowRows);
+    vec2 windowHalfSize = min(windowSize / cellSize, vec2(0.95)) * 0.5; // Fill 95% of cell size for thin separators
+    
+    if (isInRect(windowLocalUV, windowCenter, windowHalfSize)) {
+      // Seed per window cell
+      float windowSeed = buildingId * 100.0 + windowIndex.x * 10.0 + windowIndex.y;
+      
+      // Re-randomize every 5 seconds independently per window
+      float period = 5.0;
+      float cycleIndex = floor(uTime / period);
+      float rnd = hash3(vec3(windowSeed, cycleIndex, windowSeed * 0.13));
+      
+      // 35% lit, 65% dark per cycle
+      bool lit = rnd > 0.65;
+      
+      return lit ? 0.8 : 0.35;
+    }
+    
+    return 0.0; // Not in a window
+  }
+
   void main() {
     vec2 uv = vUv;
     
@@ -77,8 +166,9 @@ const fragmentShader = /* glsl */ `
     float endBuilding = ceil((scroll + 1.0 + buildingWidth) / buildingWidth);
     
     float minDist = 1000.0;
+    float windowBrightness = 0.0;
     
-    // Draw line segments for each building transition
+    // Draw line segments and windows for each building transition
     for (float i = startBuilding; i <= endBuilding; i += 1.0) {
       float x1 = i * buildingWidth - scroll;
       float x2 = (i + 1.0) * buildingWidth - scroll;
@@ -88,6 +178,10 @@ const fragmentShader = /* glsl */ `
       
       // Only draw if segment is potentially visible
       if (x2 >= -0.1 && x1 <= 1.1) {
+        // Check for windows in this building
+        float buildingWindowBrightness = getWindowBrightness(uv, i, x1, x2, h1);
+        windowBrightness = max(windowBrightness, buildingWindowBrightness);
+        
         // Horizontal segment (rooftop)
         vec2 hStart = vec2(x1, h1);
         vec2 hEnd = vec2(x2, h1);
@@ -109,8 +203,17 @@ const fragmentShader = /* glsl */ `
     // Create the line
     float line = 1.0 - smoothstep(lineWidth - aa, lineWidth + aa, minDist);
     
-    // Final color
-    vec3 color = mix(bgColor, lineColor, line);
+    // Final color combining background, line, and windows
+    vec3 color = bgColor;
+    
+    // Add windows first (so line can draw over them)
+    if (windowBrightness > 0.0) {
+      vec3 windowColor = lineColor * windowBrightness;
+      color = mix(color, windowColor, windowBrightness);
+    }
+    
+    // Add the line on top
+    color = mix(color, lineColor, line);
     
     gl_FragColor = vec4(color, 1.0);
   }
