@@ -37,6 +37,58 @@
   }
 }
 
+/* Custom scrollbar styles for terminal */
+.terminal-scrollbar {
+  /* Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(77, 204, 255, 0.3) rgba(41, 46, 66, 0.2);
+}
+
+.terminal-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.terminal-scrollbar::-webkit-scrollbar-track {
+  background: rgba(41, 46, 66, 0.2);
+  border-radius: 4px;
+}
+
+.terminal-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(77, 204, 255, 0.3);
+  border-radius: 4px;
+  border: 1px solid rgba(41, 46, 66, 0.3);
+}
+
+.terminal-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(77, 204, 255, 0.5);
+}
+
+.terminal-scrollbar::-webkit-scrollbar-thumb:active {
+  background: rgba(77, 204, 255, 0.7);
+}
+
+/* Corner where scrollbars meet */
+.terminal-scrollbar::-webkit-scrollbar-corner {
+  background: rgba(41, 46, 66, 0.2);
+}
+
+/* Terminal formatting classes that work with existing structure */
+.terminal-bold {
+  font-weight: 700 !important;
+  color: #c0caf5 !important;
+}
+
+.terminal-link {
+  color: var(--terminal-command) !important;
+  text-decoration: underline;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.terminal-link:hover {
+  color: var(--terminal-prompt) !important;
+}
+
 @media (max-width: 767px) {
   .terminal-output-scroll {
     overflow-x: auto;

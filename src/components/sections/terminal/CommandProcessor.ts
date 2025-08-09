@@ -91,7 +91,7 @@ const commands: Record<string, CommandConfig> = {
     execute: (_, isNested = false) => {
       const commandList = Object.entries(commands)
         .filter(([_, config]) => !config.hidden)
-        .map(([cmd, config]) => `${cmd}: ${config.description}\n   Usage: ${config.usage}`)
+        .map(([cmd, config]) => `**${cmd}**: ${config.description}\n   Usage: **${config.usage}**`)
         .join('\n\n');
       return `Available commands:\n\n${commandList}`;
     }
@@ -202,10 +202,15 @@ I'm always interested in discussing new opportunities and collaborations!`
     description: 'Display all command outputs in sequence',
     usage: 'all',
     execute: () => {
+      // Determine separator length based on screen width
+      const separatorLength = (typeof window !== 'undefined' && window.innerWidth < 768) 
+        ? 36  // 14 characters less for mobile (50 - 14 = 36)
+        : 50; // Full length for desktop
+      
       return ALL_COMMAND_SEQUENCE
         .map(cmd => {
           const output = commands[cmd].execute([], true);
-          return `\n${'-'.repeat(50)}\n\n$ ${cmd}\n\n${output}`;
+          return `\n${'-'.repeat(separatorLength)}\n\n$ ${cmd}\n\n${output}`;
         })
         .join('\n');
     }
