@@ -3,8 +3,9 @@ interface CommandConfig {
   name: string;
   description: string;
   usage: string;
-  execute: (args: string[], isNested?: boolean) => string;
+  execute: (args: string[], isNested?: boolean, setBackground?: (bg: 'line' | 'matrix') => void) => string;
   hidden?: boolean;
+  excludeFromAll?: boolean; // New property to exclude from 'all' command
 }
 
 // Define available sections for portfolio navigation
@@ -65,7 +66,7 @@ ronniepyne.com
 
 Type 'help' to see available commands.`;
 
-// Define the sequence of commands for the 'all' command
+// Define the sequence of commands for the 'all' command (excluding those with excludeFromAll)
 const ALL_COMMAND_SEQUENCE = ['help', 'about', 'skills', 'projects', 'contact'];
 
 const commands: Record<string, CommandConfig> = {
@@ -197,6 +198,42 @@ I'm always interested in discussing new opportunities and collaborations!`
     execute: () => 'Terminal cleared.',
     hidden: true
   },
+  theme: {
+    name: 'theme',
+    description: 'Switch visual theme and background',
+    usage: 'theme [line|matrix]',
+    execute: (args, isNested = false, setBackground) => {
+      if (args.length === 0) {
+        return `Available themes:
+• **line** - Cyberpunk city skyline with cyan colors
+• **matrix** - Digital rain with classic Matrix green
+
+Usage: **theme line** or **theme matrix**`;
+      }
+
+      const themeType = args[0].toLowerCase();
+      
+      if (themeType !== 'line' && themeType !== 'matrix') {
+        return `Invalid theme: ${themeType}
+Available themes: **line**, **matrix**
+
+Usage: **theme line** or **theme matrix**`;
+      }
+
+      if (setBackground) {
+        setBackground(themeType as 'line' | 'matrix');
+        return `Theme switched to: **${themeType}**
+
+${themeType === 'matrix' 
+  ? 'Welcome to the Matrix... 🟢\nGreen terminal colors and digital rain activated.' 
+  : 'Back to the line cityscape 🏙️\nCyan terminal colors and city skyline activated.'
+}`;
+      }
+
+      return 'Theme switching not available in this context.';
+    },
+    excludeFromAll: true
+  },
   all: {
     name: 'all',
     description: 'Display all command outputs in sequence',
@@ -217,7 +254,7 @@ I'm always interested in discussing new opportunities and collaborations!`
   }
 };
 
-export function processCommand(input: string): string {
+export function processCommand(input: string, setBackground?: (bg: 'line' | 'matrix') => void): string {
   const [command, ...args] = input.trim().toLowerCase().split(/\s+/);
 
   if (!command) {
@@ -228,5 +265,5 @@ export function processCommand(input: string): string {
     return `Command not found: ${command}. Type 'help' for available commands.`;
   }
 
-  return commands[command].execute(args);
+  return commands[command].execute(args, false, setBackground);
 }

@@ -22,7 +22,22 @@ const fragmentShader = /* glsl */ `
 
   // Generate building height for a given building ID
   float buildingHeight(float id) {
-    return 0.3 + 0.4 * hash(id * 17.31);
+    float baseline = 0.25; // Ground level (halfway between 0.15 and 0.35)
+    
+    // Every 3-6 buildings, return to baseline to establish ground (more frequent)
+    float groundFreq = 3.0 + 3.0 * hash(floor(id / 5.0));
+    if (mod(id, groundFreq) < 1.0) {
+      return baseline;
+    }
+    
+    // Normal building heights with minimum height difference
+    float rawHeight = hash(id * 17.31);
+    // Quantize to minimum steps for more building-like appearance
+    float steps = 8.0; // Number of height levels
+    float quantizedHeight = floor(rawHeight * steps) / steps;
+    
+    // Adjust building height calculation to maintain max height at ~0.9
+    return baseline + 0.1 + 0.55 * quantizedHeight; // Max height remains ~0.9
   }
 
 

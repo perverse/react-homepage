@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { CommandHistory } from './terminal/CommandHistory';
 import { InputLine } from './terminal/InputLine';
 import { processCommand } from './terminal/CommandProcessor';
+import { useBackground } from '../../contexts/BackgroundContext';
+import { useTheme } from '../../contexts/ThemeContext';
 
 interface Command {
   input: string;
@@ -15,12 +17,14 @@ export default function Terminal() {
   const [historyIndex, setHistoryIndex] = useState(-1);
   const inputRef = useRef<HTMLInputElement>(null);
   const outputRef = useRef<HTMLDivElement>(null);
+  const { setBackground } = useBackground();
+  const { currentTheme } = useTheme();
 
   // Show title command on load and focus input
   useEffect(() => {
     const titleCommand: Command = {
       input: 'title',
-      output: processCommand('title')
+      output: processCommand('title', setBackground)
     };
     setCommands([titleCommand]);
     
@@ -52,12 +56,12 @@ export default function Terminal() {
       // Then show the title
       const titleCommand: Command = {
         input: 'title',
-        output: processCommand('title')
+        output: processCommand('title', setBackground)
       };
       // Then process the 'all' command
       const allCommand: Command = {
         input: command,
-        output: processCommand(command)
+        output: processCommand(command, setBackground)
       };
       setCommands(prev => [...prev, titleCommand, allCommand]);
       setCurrentInput('');
@@ -69,7 +73,7 @@ export default function Terminal() {
     if (command === 'clear') {
       const clearCommand: Command = {
         input: command,
-        output: processCommand(command)
+        output: processCommand(command, setBackground)
       };
       // Add clear command to history and hide previous commands
       setCommands(prev => [...prev.map(cmd => ({ ...cmd, hidden: true })), clearCommand]);
@@ -80,7 +84,7 @@ export default function Terminal() {
 
     const newCommand: Command = {
       input: currentInput,
-      output: processCommand(currentInput)
+      output: processCommand(currentInput, setBackground)
     };
 
     setCommands(prev => [...prev, newCommand]);
@@ -127,6 +131,33 @@ export default function Terminal() {
   // Filter out hidden commands for display
   const visibleCommands = commands.filter(cmd => !cmd.hidden);
 
+  // Theme-aware styling
+  const getThemeStyles = () => {
+    if (currentTheme === 'matrix') {
+      return {
+        terminalBg: 'rgba(2, 8, 2, 0.70)', // More transparent to show Matrix rain
+        headerBg: 'rgba(5, 15, 5, 0.85)', // More transparent header
+        glow: `
+          0 0 20px rgba(0, 255, 65, 0.2),
+          0 0 40px rgba(0, 255, 65, 0.1),
+          0 0 80px rgba(0, 255, 65, 0.05)
+        `
+      };
+    } else {
+      return {
+        terminalBg: 'rgba(8, 8, 16, 0.85)', // Original cyan theme
+        headerBg: 'rgba(45, 50, 65, 0.9)', // Original header
+        glow: `
+          0 0 20px rgba(41, 46, 66, 0.3),
+          0 0 40px rgba(77, 204, 255, 0.15),
+          0 0 80px rgba(77, 204, 255, 0.08)
+        `
+      };
+    }
+  };
+
+  const themeStyles = getThemeStyles();
+
   return (
     <section className="py-20 h-[calc(100vh-53px)]">
       <div className="container mx-auto px-4 h-full">
@@ -134,20 +165,16 @@ export default function Terminal() {
           className="w-full h-full border border-[var(--terminal-border)] rounded-lg overflow-hidden font-mono text-sm shadow-lg backdrop-blur-md"
           onClick={handleTerminalClick}
           style={{
-            backgroundColor: 'rgba(8, 8, 16, 0.85)', // Darker, more opaque background
+            backgroundColor: themeStyles.terminalBg,
             backdropFilter: 'blur(10px)',
-            boxShadow: `
-              0 0 20px rgba(41, 46, 66, 0.3),
-              0 0 40px rgba(77, 204, 255, 0.15),
-              0 0 80px rgba(77, 204, 255, 0.08)
-            `,
+            boxShadow: themeStyles.glow,
           }}
         >
           <div className="h-full flex flex-col">
             <div 
               className="h-7 flex items-center justify-between px-4"
               style={{
-                backgroundColor: 'rgba(45, 50, 65, 0.9)', // Darker header
+                backgroundColor: themeStyles.headerBg,
                 backdropFilter: 'blur(5px)',
               }}
             >
@@ -185,7 +212,7 @@ export default function Terminal() {
               onSubmit={handleSubmit} 
               className="p-4 border-t border-[var(--terminal-border)]"
               style={{
-                backgroundColor: 'rgba(8, 8, 16, 0.8)',
+                backgroundColor: themeStyles.terminalBg.replace('0.85', '0.8'), // Slightly more transparent for input area
                 backdropFilter: 'blur(5px)',
               }}
             >

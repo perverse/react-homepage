@@ -1,16 +1,33 @@
 import Terminal from './components/sections/Terminal'
 import CyberpunkBackground from './components/ui/CyberpunkBackground'
+import MatrixBackground from './components/ui/MatrixBackground'
+import { ThemeProvider } from './contexts/ThemeContext'
+import { BackgroundProvider, useBackground } from './contexts/BackgroundContext'
 
-function App() {
+function AppContent() {
+  const { currentBackground } = useBackground()
+
+  const BackgroundComponent = currentBackground === 'matrix' ? MatrixBackground : CyberpunkBackground
+
   return (
     <main className="relative w-full h-screen overflow-hidden">
       <div className="fixed inset-0 z-0">
-        <CyberpunkBackground />
+        <BackgroundComponent />
       </div>
       <div className="relative z-10 h-full">
         <Terminal />
       </div>
     </main>
+  )
+}
+
+function App() {
+  return (
+    <ThemeProvider>
+      <BackgroundProvider>
+        <AppContent />
+      </BackgroundProvider>
+    </ThemeProvider>
   )
 }
 
