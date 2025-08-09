@@ -1,0 +1,54 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --terminal-bg: #1a1b26;
+    --terminal-border: #292e42;
+    --terminal-text: #a9b1d6;
+    --terminal-prompt: #7aa2f7;
+    --terminal-command: #7dcfff;
+    --terminal-output: #c0caf5;
+    --terminal-error: #f7768e;
+    --terminal-warning: #e0af68;
+    --terminal-success: #9ece6a;
+  }
+
+  .dark {
+    --terminal-bg: #1a1b26;
+    --terminal-border: #292e42;
+    --terminal-text: #a9b1d6;
+    --terminal-prompt: #7aa2f7;
+    --terminal-command: #7dcfff;
+    --terminal-output: #c0caf5;
+    --terminal-error: #f7768e;
+    --terminal-warning: #e0af68;
+    --terminal-success: #9ece6a;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-[#0A0A0F] text-white;
+  }
+}
+
+@media (max-width: 767px) {
+  .terminal-output-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .terminal-output-scroll::-webkit-scrollbar {
+    display: none;
+  }
+  .terminal-padding-mobile {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
