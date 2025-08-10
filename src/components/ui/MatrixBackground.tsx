@@ -74,7 +74,7 @@ export default function MatrixBackground() {
     }
 
     // Start animation
-    draw()
+    draw(performance.now())
 
     // Cleanup
     return () => {

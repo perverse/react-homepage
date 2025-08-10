@@ -1,36 +1,187 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Ronnie Pyne - Personal Portfolio
 
-## Getting Started
+A modern, interactive personal portfolio website featuring a terminal interface and dynamic backgrounds. Built with React, TypeScript, and Vite for optimal performance and developer experience.
 
-First, run the development server:
+## ✨ Features
 
+### 🖥️ Interactive Terminal
+- **Command-line interface** with a nostalgic terminal aesthetic
+- **Built-in commands** for navigation and information display
+- **Responsive design** that works seamlessly on all devices
+- **Command history** with arrow key navigation
+- **Auto-focus** on page load for immediate interaction
+
+### 🎨 Dynamic Backgrounds
+- **Hex Grid** - Animated hexagonal grid with neon shimmer effects and mouse interaction
+- **Matrix Rain** - Digital rain effect with green terminal theme
+- **Cyberpunk Cityscape** - Animated line art cityscape with glowing windows
+
+### 🎯 Theme System
+- **Modular theme architecture** for easy customization
+- **Persistent theme selection** stored in localStorage
+- **Automatic background synchronization** with theme changes
+- **Cross-browser compatible** styling
+
+### 📱 Responsive Design
+- **Mobile-first approach** with optimized layouts
+- **Touch-friendly interface** for mobile devices
+- **Consistent experience** across all screen sizes
+
+## 🛠️ Tech Stack
+
+### Core Technologies
+- **React 18** - Modern React with hooks and functional components
+- **TypeScript** - Type-safe development with strict configuration
+- **Vite** - Fast build tool and development server
+
+### Styling & UI
+- **Tailwind CSS** - Utility-first CSS framework
+- **PostCSS** - CSS processing and optimization
+- **Custom CSS Variables** - Dynamic theming system
+
+### Graphics & Animation
+- **Canvas API** - High-performance 2D graphics for backgrounds
+- **Three.js** - 3D graphics for cyberpunk cityscape
+- **WebGL Shaders** - Custom shaders for visual effects
+
+### Testing
+- **Jest** - Unit testing framework
+- **React Testing Library** - Component testing utilities
+- **Babel** - JavaScript compilation for testing
+
+### Build & Development
+- **ESLint** - Code quality and consistency
+- **PostCSS** - CSS processing pipeline
+- **TypeScript Compiler** - Type checking and compilation
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js 18+ 
+- npm or yarn package manager
+
+### Installation
 ```bash
+# Clone the repository
+git clone <your-repo-url>
+cd portfolio
+
+# Install dependencies
+npm install
+
+# Start development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Available Scripts
+```bash
+npm run dev          # Start development server
+npm run build        # Build for production
+npm run preview      # Preview production build
+npm run test         # Run test suite
+npm run test:watch   # Run tests in watch mode
+npm run lint         # Run ESLint
+npm run type-check   # Run TypeScript type checking
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🏗️ Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+src/
+├── app/                    # App entry point and global styles
+├── components/            # React components
+│   ├── layout/           # Layout components (Header, Footer, etc.)
+│   ├── sections/         # Main page sections
+│   │   └── terminal/     # Terminal interface components
+│   └── ui/               # Reusable UI components
+├── contexts/              # React context providers
+├── lib/                   # Utility functions and helpers
+└── test/                  # Test setup and configuration
+```
 
-## Learn More
+## 🎨 Customization
 
-To learn more about Next.js, take a look at the following resources:
+### Adding New Themes
+1. Update `ThemeType` in `ThemeContext.tsx`
+2. Add theme colors to CSS variables in `index.css`
+3. Update `BackgroundContext.tsx` to include new background type
+4. Add background component to `App.tsx`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Adding New Commands
+1. Extend the `commands` object in `CommandProcessor.ts`
+2. Implement command logic with proper typing
+3. Add to help text and exclude from `all` command if needed
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Adding New Backgrounds
+1. Create new background component in `components/ui/`
+2. Implement Canvas or Three.js rendering
+3. Add background selection logic in `App.tsx`
 
-## Deploy on Vercel
+## 🧪 Testing
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The project includes comprehensive testing setup:
+- **Unit tests** for all major components
+- **Integration tests** for terminal functionality
+- **Test utilities** and setup files
+- **Jest configuration** with React Testing Library
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Run tests with:
+```bash
+npm test
+```
+
+## 📦 Deployment
+
+### Vercel (Recommended)
+```bash
+# Install Vercel CLI
+npm i -g vercel
+
+# Login to Vercel
+vercel login
+
+# Deploy
+vercel --prod
+```
+
+### Manual Build
+```bash
+# Build for production
+npm run build
+
+# Preview build
+npm run preview
+```
+
+## 🔧 Configuration Files
+
+- **`vite.config.ts`** - Vite build configuration
+- **`tailwind.config.js`** - Tailwind CSS configuration
+- **`tsconfig.json`** - TypeScript configuration
+- **`postcss.config.js`** - PostCSS configuration
+- **`.eslintrc.json`** - ESLint configuration
+- **`jest.config.js`** - Jest testing configuration
+
+## 🌟 Performance Features
+
+- **Canvas optimization** with DPR capping and frame throttling
+- **Static layer pre-rendering** for complex backgrounds
+- **Path2D reuse** for efficient drawing operations
+- **30 FPS throttling** for smooth animations
+- **Lazy loading** and code splitting where applicable
+
+## 🤝 Contributing
+
+This is a personal portfolio project, but suggestions and improvements are welcome. Please ensure all tests pass and follow the existing code style.
+
+## 📄 License
+
+Personal project - All rights reserved.
+
+## 👨‍💻 Author
+
+**Ronnie Pyne** - Software Developer and Technology Enthusiast
+
+---
+
+Built with ❤️ using modern web technologies

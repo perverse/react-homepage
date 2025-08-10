@@ -1,4 +1,4 @@
-import React from 'react'
+
 import { render, screen, fireEvent } from '@/test/test-utils'
 import { InputLine } from '../InputLine'
 
@@ -87,7 +87,7 @@ describe('InputLine', () => {
 
   describe('Focus Handling', () => {
     it('can be focused programmatically', () => {
-      const { container } = render(<InputLine {...mockProps} />)
+      render(<InputLine {...mockProps} />)
       const input = screen.getByRole('textbox')
       
       input.focus()

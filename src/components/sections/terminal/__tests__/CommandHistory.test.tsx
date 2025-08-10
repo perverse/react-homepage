@@ -1,4 +1,4 @@
-import React from 'react'
+
 import { render, screen } from '@/test/test-utils'
 import { CommandHistory } from '../CommandHistory'
 

@@ -3,21 +3,10 @@ interface CommandConfig {
   name: string;
   description: string;
   usage: string;
-  execute: (args: string[], isNested?: boolean, setBackground?: (bg: 'line' | 'matrix') => void) => string;
+  execute: (args: string[], setBackground?: (bg: 'line' | 'matrix' | 'hex') => void) => string;
   hidden?: boolean;
   excludeFromAll?: boolean; // New property to exclude from 'all' command
 }
-
-// Define available sections for portfolio navigation
-const AVAILABLE_SECTIONS = ['about', 'skills', 'projects', 'contact'] as const;
-type Section = typeof AVAILABLE_SECTIONS[number];
-
-// Helper function to format section list for usage messages
-const formatSectionList = () => AVAILABLE_SECTIONS.join(', ');
-
-// Helper function to validate section
-const isValidSection = (section: string): section is Section => 
-  AVAILABLE_SECTIONS.includes(section as Section);
 
 // Define project details for easy maintenance
 const PROJECTS = {
@@ -51,7 +40,7 @@ const DESKTOP_TITLE_ART = `
 ██╔══██╗██║   ██║██║╚██╗██║██║╚██╗██║██║██╔══╝  ██╔═══╝   ╚██╔╝  ██║╚██╗██║██╔══╝  
 ██║  ██║╚██████╔╝██║ ╚████║██║ ╚████║██║███████╗██║        ██║   ██║ ╚████║███████╗
 ╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚═╝  ╚═══╝╚═╝╚══════╝╚═╝        ╚═╝   ╚═╝  ╚═══╝╚══════╝
-                                                                                      
+                                                                                       
 ██████╗  ██████╗ ████████╗ ██████╗ ██████╗ ███╗   ███╗                              
 ██╔══██╗██╔═══██╗╚══██╔══╝██╔════╝██╔═══██╗████╗ ████║                              
 ██║  ██║██║   ██║   ██║   ██║     ██║   ██║██╔████╔██║                              
@@ -75,12 +64,9 @@ const commands: Record<string, CommandConfig> = {
     description: 'Display the title art',
     usage: 'title',
     execute: () => {
-      // Check if we're in a browser environment
       if (typeof window !== 'undefined') {
-        // Return different ASCII art based on screen width
         return window.innerWidth < 768 ? MOBILE_TITLE_ART : DESKTOP_TITLE_ART;
       }
-      // Default to desktop art in non-browser environments (like tests)
       return DESKTOP_TITLE_ART;
     },
     hidden: true
@@ -89,7 +75,7 @@ const commands: Record<string, CommandConfig> = {
     name: 'help',
     description: 'Show available commands',
     usage: 'help',
-    execute: (_, isNested = false) => {
+    execute: () => {
       const commandList = Object.entries(commands)
         .filter(([_, config]) => !config.hidden)
         .map(([cmd, config]) => `**${cmd}**: ${config.description}\n   Usage: **${config.usage}**`)
@@ -201,33 +187,25 @@ I'm always interested in discussing new opportunities and collaborations!`
   theme: {
     name: 'theme',
     description: 'Switch visual theme and background',
-    usage: 'theme [line|matrix]',
-    execute: (args, isNested = false, setBackground) => {
+    usage: 'theme [line|matrix|hex]',
+    execute: (args, setBackground) => {
       if (args.length === 0) {
-        return `Available themes:
-• **line** - Cyberpunk city skyline with cyan colors
-• **matrix** - Digital rain with classic Matrix green
-
-Usage: **theme line** or **theme matrix**`;
+        return `Available themes:\n• **line** - Cyberpunk city skyline with cyan colors\n• **matrix** - Digital rain with classic Matrix green\n• **hex** - Hexagonal grid with purple/blue neon accents\n\nUsage: **theme line** or **theme matrix** or **theme hex**`;
       }
 
       const themeType = args[0].toLowerCase();
-      
-      if (themeType !== 'line' && themeType !== 'matrix') {
-        return `Invalid theme: ${themeType}
-Available themes: **line**, **matrix**
 
-Usage: **theme line** or **theme matrix**`;
+      if (themeType !== 'line' && themeType !== 'matrix' && themeType !== 'hex') {
+        return `Invalid theme: ${themeType}\nAvailable themes: **line**, **matrix**, **hex**\n\nUsage: **theme line** or **theme matrix** or **theme hex**`;
       }
 
       if (setBackground) {
-        setBackground(themeType as 'line' | 'matrix');
-        return `Theme switched to: **${themeType}**
-
-${themeType === 'matrix' 
+        setBackground(themeType as 'line' | 'matrix' | 'hex');
+        return `Theme switched to: **${themeType}**\n\n${themeType === 'matrix' 
   ? 'Welcome to the Matrix... 🟢\nGreen terminal colors and digital rain activated.' 
-  : 'Back to the line cityscape 🏙️\nCyan terminal colors and city skyline activated.'
-}`;
+  : themeType === 'hex'
+    ? 'Hex mode engaged ⬡\nPurple/blue neon hex grid activated.'
+    : 'Back to the line cityscape 🏙️\nCyan terminal colors and city skyline activated.'}`;
       }
 
       return 'Theme switching not available in this context.';
@@ -239,14 +217,13 @@ ${themeType === 'matrix'
     description: 'Display all command outputs in sequence',
     usage: 'all',
     execute: () => {
-      // Determine separator length based on screen width
       const separatorLength = (typeof window !== 'undefined' && window.innerWidth < 768) 
-        ? 36  // 14 characters less for mobile (50 - 14 = 36)
-        : 50; // Full length for desktop
+        ? 36
+        : 50;
       
       return ALL_COMMAND_SEQUENCE
         .map(cmd => {
-          const output = commands[cmd].execute([], true);
+          const output = commands[cmd].execute([]);
           return `\n${'-'.repeat(separatorLength)}\n\n$ ${cmd}\n\n${output}`;
         })
         .join('\n');
@@ -254,7 +231,7 @@ ${themeType === 'matrix'
   }
 };
 
-export function processCommand(input: string, setBackground?: (bg: 'line' | 'matrix') => void): string {
+export function processCommand(input: string, setBackground?: (bg: 'line' | 'matrix' | 'hex') => void): string {
   const [command, ...args] = input.trim().toLowerCase().split(/\s+/);
 
   if (!command) {
@@ -265,5 +242,5 @@ export function processCommand(input: string, setBackground?: (bg: 'line' | 'mat
     return `Command not found: ${command}. Type 'help' for available commands.`;
   }
 
-  return commands[command].execute(args, false, setBackground);
+  return commands[command].execute(args, setBackground);
 }

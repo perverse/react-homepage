@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react'
 
-export type ThemeType = 'line' | 'matrix'
+export type ThemeType = 'line' | 'matrix' | 'hex'
 
 interface ThemeColors {
   '--terminal-bg': string
@@ -36,6 +36,17 @@ const themes: Record<ThemeType, ThemeColors> = {
     '--terminal-error': '#ff3333',
     '--terminal-warning': '#ffaa00',
     '--terminal-success': '#00ff88'
+  },
+  hex: {
+    '--terminal-bg': '#14121f',
+    '--terminal-border': '#2b2442',
+    '--terminal-text': '#d6d0ff',
+    '--terminal-prompt': '#a78bfa',
+    '--terminal-command': '#8fbafc',
+    '--terminal-output': '#e2ddff',
+    '--terminal-error': '#ff6b8f',
+    '--terminal-warning': '#f1c078',
+    '--terminal-success': '#8be7a1'
   }
 }
 
@@ -61,14 +72,14 @@ interface ThemeProviderProps {
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   const [currentTheme, setCurrentTheme] = useState<ThemeType>(() => {
-    // Load theme from localStorage on initialization
+    // Try to get theme from localStorage, default to 'hex' instead of 'line'
     if (typeof window !== 'undefined') {
-      const savedTheme = localStorage.getItem('terminal-theme')
-      if (savedTheme && (savedTheme === 'line' || savedTheme === 'matrix')) {
-        return savedTheme as ThemeType
+      const saved = localStorage.getItem('theme')
+      if (saved && (saved === 'line' || saved === 'matrix' || saved === 'hex')) {
+        return saved
       }
     }
-    return 'line' // Default theme
+    return 'hex' // Changed from 'line' to 'hex'
   })
 
   const applyTheme = (theme: ThemeType) => {

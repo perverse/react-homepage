@@ -1,4 +1,4 @@
-import React from 'react'
+
 import { render, screen, fireEvent } from '@/test/test-utils'
 import Terminal from '../Terminal'
 

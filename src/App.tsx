@@ -1,13 +1,18 @@
 import Terminal from './components/sections/Terminal'
 import CyberpunkBackground from './components/ui/CyberpunkBackground'
 import MatrixBackground from './components/ui/MatrixBackground'
+import HexGridBackground from './components/ui/HexGridBackground'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { BackgroundProvider, useBackground } from './contexts/BackgroundContext'
 
 function AppContent() {
   const { currentBackground } = useBackground()
 
-  const BackgroundComponent = currentBackground === 'matrix' ? MatrixBackground : CyberpunkBackground
+  const BackgroundComponent = currentBackground === 'matrix'
+    ? MatrixBackground
+    : currentBackground === 'hex'
+      ? HexGridBackground
+      : CyberpunkBackground
 
   return (
     <main className="relative w-full h-screen overflow-hidden">
