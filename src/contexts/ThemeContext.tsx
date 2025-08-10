@@ -4,6 +4,7 @@ export type ThemeType = 'line' | 'matrix' | 'hex'
 
 interface ThemeColors {
   '--terminal-bg': string
+  '--terminal-header-bg': string
   '--terminal-border': string
   '--terminal-text': string
   '--terminal-prompt': string
@@ -12,11 +13,15 @@ interface ThemeColors {
   '--terminal-error': string
   '--terminal-warning': string
   '--terminal-success': string
+  '--terminal-input-bg': string
+  '--terminal-grid-line': string
+  '--terminal-glow': string
 }
 
 const themes: Record<ThemeType, ThemeColors> = {
   line: {
-    '--terminal-bg': '#1a1b26',
+    '--terminal-bg': 'rgba(8, 8, 16, 0.85)',
+    '--terminal-header-bg': 'rgba(45, 50, 65, 0.9)',
     '--terminal-border': '#292e42',
     '--terminal-text': '#a9b1d6',
     '--terminal-prompt': '#7aa2f7',
@@ -24,10 +29,18 @@ const themes: Record<ThemeType, ThemeColors> = {
     '--terminal-output': '#c0caf5',
     '--terminal-error': '#f7768e',
     '--terminal-warning': '#e0af68',
-    '--terminal-success': '#9ece6a'
+    '--terminal-success': '#9ece6a',
+    '--terminal-input-bg': 'rgba(8, 8, 16, 0.80)',
+    '--terminal-grid-line': 'rgba(41, 46, 66, 0.1)',
+    '--terminal-glow': `
+      0 0 20px rgba(41, 46, 66, 0.3),
+      0 0 40px rgba(77, 204, 255, 0.15),
+      0 0 80px rgba(77, 204, 255, 0.08)
+    `
   },
   matrix: {
-    '--terminal-bg': '#0a1a0a',
+    '--terminal-bg': 'rgba(2, 8, 2, 0.70)',
+    '--terminal-header-bg': 'rgba(5, 15, 5, 0.85)',
     '--terminal-border': '#1a4d1a',
     '--terminal-text': '#00ff41',
     '--terminal-prompt': '#00cc33',
@@ -35,10 +48,18 @@ const themes: Record<ThemeType, ThemeColors> = {
     '--terminal-output': '#00dd44',
     '--terminal-error': '#ff3333',
     '--terminal-warning': '#ffaa00',
-    '--terminal-success': '#00ff88'
+    '--terminal-success': '#00ff88',
+    '--terminal-input-bg': 'rgba(2, 8, 2, 0.65)',
+    '--terminal-grid-line': 'rgba(41, 46, 66, 0.1)',
+    '--terminal-glow': `
+      0 0 20px rgba(0, 255, 65, 0.2),
+      0 0 40px rgba(0, 255, 65, 0.1),
+      0 0 80px rgba(0, 255, 65, 0.05)
+    `
   },
   hex: {
-    '--terminal-bg': '#14121f',
+    '--terminal-bg': 'rgba(8, 8, 16, 0.85)',
+    '--terminal-header-bg': 'rgba(45, 50, 65, 0.9)',
     '--terminal-border': '#2b2442',
     '--terminal-text': '#d6d0ff',
     '--terminal-prompt': '#a78bfa',
@@ -46,7 +67,14 @@ const themes: Record<ThemeType, ThemeColors> = {
     '--terminal-output': '#e2ddff',
     '--terminal-error': '#ff6b8f',
     '--terminal-warning': '#f1c078',
-    '--terminal-success': '#8be7a1'
+    '--terminal-success': '#8be7a1',
+    '--terminal-input-bg': 'rgba(8, 8, 16, 0.80)',
+    '--terminal-grid-line': 'rgba(41, 46, 66, 0.1)',
+    '--terminal-glow': `
+      0 0 20px rgba(41, 46, 66, 0.3),
+      0 0 40px rgba(77, 204, 255, 0.15),
+      0 0 80px rgba(77, 204, 255, 0.08)
+    `
   }
 }
 
@@ -97,7 +125,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     
     // Save to localStorage
     if (typeof window !== 'undefined') {
-      localStorage.setItem('terminal-theme', theme)
+      localStorage.setItem('theme', theme)
     }
   }
 

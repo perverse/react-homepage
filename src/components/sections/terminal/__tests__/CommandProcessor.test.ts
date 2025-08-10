@@ -1,4 +1,4 @@
-import { processCommand } from '../CommandProcessor';
+import { processCommand } from '@/components/sections/terminal/CommandProcessor';
 
 describe('CommandProcessor', () => {
   describe('Basic command handling', () => {

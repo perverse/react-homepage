@@ -1,6 +1,6 @@
 
 import { render, screen, fireEvent } from '@/test/test-utils'
-import { InputLine } from '../InputLine'
+import { InputLine } from '@/components/sections/terminal/InputLine'
 
 describe('InputLine', () => {
   const mockProps = {

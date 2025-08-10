@@ -1,6 +1,6 @@
 
 import { render, screen } from '@/test/test-utils'
-import { CommandHistory } from '../CommandHistory'
+import { CommandHistory } from '@/components/sections/terminal/CommandHistory'
 
 describe('CommandHistory', () => {
   const mockCommands = [

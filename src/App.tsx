@@ -1,18 +1,20 @@
-import Terminal from './components/sections/Terminal'
-import CyberpunkBackground from './components/ui/CyberpunkBackground'
-import MatrixBackground from './components/ui/MatrixBackground'
-import HexGridBackground from './components/ui/HexGridBackground'
-import { ThemeProvider } from './contexts/ThemeContext'
-import { BackgroundProvider, useBackground } from './contexts/BackgroundContext'
+import Terminal from '@/components/sections/Terminal'
+import CyberpunkBackground from '@/components/ui/CyberpunkBackground'
+import MatrixBackground from '@/components/ui/MatrixBackground'
+import HexGridBackground from '@/components/ui/HexGridBackground'
+import { ThemeProvider, useTheme } from '@/contexts/ThemeContext'
+import type { ThemeType } from '@/contexts/ThemeContext'
+import type { ComponentType } from 'react'
+
+const BackgroundComponentMap: Record<ThemeType, ComponentType> = {
+  line: CyberpunkBackground,
+  matrix: MatrixBackground,
+  hex: HexGridBackground,
+}
 
 function AppContent() {
-  const { currentBackground } = useBackground()
-
-  const BackgroundComponent = currentBackground === 'matrix'
-    ? MatrixBackground
-    : currentBackground === 'hex'
-      ? HexGridBackground
-      : CyberpunkBackground
+  const { currentTheme } = useTheme()
+  const BackgroundComponent = BackgroundComponentMap[currentTheme] ?? CyberpunkBackground
 
   return (
     <main className="relative w-full h-screen overflow-hidden">
@@ -29,9 +31,7 @@ function AppContent() {
 function App() {
   return (
     <ThemeProvider>
-      <BackgroundProvider>
-        <AppContent />
-      </BackgroundProvider>
+      <AppContent />
     </ThemeProvider>
   )
 }

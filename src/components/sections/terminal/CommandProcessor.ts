@@ -3,7 +3,7 @@ interface CommandConfig {
   name: string;
   description: string;
   usage: string;
-  execute: (args: string[], setBackground?: (bg: 'line' | 'matrix' | 'hex') => void) => string;
+  execute: (args: string[], setTheme?: (theme: 'line' | 'matrix' | 'hex') => void) => string;
   hidden?: boolean;
   excludeFromAll?: boolean; // New property to exclude from 'all' command
 }
@@ -188,7 +188,7 @@ I'm always interested in discussing new opportunities and collaborations!`
     name: 'theme',
     description: 'Switch visual theme and background',
     usage: 'theme [line|matrix|hex]',
-    execute: (args, setBackground) => {
+    execute: (args, setTheme) => {
       if (args.length === 0) {
         return `Available themes:\n• **line** - Cyberpunk city skyline with cyan colors\n• **matrix** - Digital rain with classic Matrix green\n• **hex** - Hexagonal grid with purple/blue neon accents\n\nUsage: **theme line** or **theme matrix** or **theme hex**`;
       }
@@ -199,8 +199,8 @@ I'm always interested in discussing new opportunities and collaborations!`
         return `Invalid theme: ${themeType}\nAvailable themes: **line**, **matrix**, **hex**\n\nUsage: **theme line** or **theme matrix** or **theme hex**`;
       }
 
-      if (setBackground) {
-        setBackground(themeType as 'line' | 'matrix' | 'hex');
+      if (setTheme) {
+        setTheme(themeType as 'line' | 'matrix' | 'hex');
         return `Theme switched to: **${themeType}**\n\n${themeType === 'matrix' 
   ? 'Welcome to the Matrix... 🟢\nGreen terminal colors and digital rain activated.' 
   : themeType === 'hex'

@@ -1,6 +1,6 @@
 
 import { render, screen, fireEvent } from '@/test/test-utils'
-import Terminal from '../Terminal'
+import Terminal from '@/components/sections/Terminal'
 
 describe('Terminal', () => {
   const typeCommand = (input: HTMLElement, command: string) => {

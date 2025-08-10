@@ -1,9 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { CommandHistory } from './terminal/CommandHistory';
-import { InputLine } from './terminal/InputLine';
-import { processCommand } from './terminal/CommandProcessor';
-import { useBackground } from '../../contexts/BackgroundContext';
-import { useTheme } from '../../contexts/ThemeContext';
+import { CommandHistory } from '@/components/sections/terminal/CommandHistory';
+import { InputLine } from '@/components/sections/terminal/InputLine';
+import { processCommand } from '@/components/sections/terminal/CommandProcessor';
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface Command {
   input: string;
@@ -17,14 +16,13 @@ export default function Terminal() {
   const [historyIndex, setHistoryIndex] = useState(-1);
   const inputRef = useRef<HTMLInputElement>(null);
   const outputRef = useRef<HTMLDivElement>(null);
-  const { setBackground } = useBackground();
-  const { currentTheme } = useTheme();
+  const { setTheme } = useTheme();
 
   // Show title command on load and focus input
   useEffect(() => {
     const titleCommand: Command = {
       input: 'title',
-      output: processCommand('title', setBackground)
+      output: processCommand('title', setTheme)
     };
     setCommands([titleCommand]);
     
@@ -56,12 +54,12 @@ export default function Terminal() {
       // Then show the title
       const titleCommand: Command = {
         input: 'title',
-        output: processCommand('title', setBackground)
+        output: processCommand('title', setTheme)
       };
       // Then process the 'all' command
       const allCommand: Command = {
         input: command,
-        output: processCommand(command, setBackground)
+        output: processCommand(command, setTheme)
       };
       setCommands(prev => [...prev, titleCommand, allCommand]);
       setCurrentInput('');
@@ -73,7 +71,7 @@ export default function Terminal() {
     if (command === 'clear') {
       const clearCommand: Command = {
         input: command,
-        output: processCommand(command, setBackground)
+        output: processCommand(command, setTheme)
       };
       // Add clear command to history and hide previous commands
       setCommands(prev => [...prev.map(cmd => ({ ...cmd, hidden: true })), clearCommand]);
@@ -84,7 +82,7 @@ export default function Terminal() {
 
     const newCommand: Command = {
       input: currentInput,
-      output: processCommand(currentInput, setBackground)
+      output: processCommand(currentInput, setTheme)
     };
 
     setCommands(prev => [...prev, newCommand]);
@@ -131,52 +129,19 @@ export default function Terminal() {
   // Filter out hidden commands for display
   const visibleCommands = commands.filter(cmd => !cmd.hidden);
 
-  // Theme-aware styling
-  const getThemeStyles = () => {
-    if (currentTheme === 'matrix') {
-      return {
-        terminalBg: 'rgba(2, 8, 2, 0.70)', // More transparent to show Matrix rain
-        headerBg: 'rgba(5, 15, 5, 0.85)', // More transparent header
-        glow: `
-          0 0 20px rgba(0, 255, 65, 0.2),
-          0 0 40px rgba(0, 255, 65, 0.1),
-          0 0 80px rgba(0, 255, 65, 0.05)
-        `
-      };
-    } else {
-      return {
-        terminalBg: 'rgba(8, 8, 16, 0.85)', // Original cyan theme
-        headerBg: 'rgba(45, 50, 65, 0.9)', // Original header
-        glow: `
-          0 0 20px rgba(41, 46, 66, 0.3),
-          0 0 40px rgba(77, 204, 255, 0.15),
-          0 0 80px rgba(77, 204, 255, 0.08)
-        `
-      };
-    }
-  };
-
-  const themeStyles = getThemeStyles();
+  // Theme styles are read directly from CSS variables (set via ThemeContext)
 
   return (
     <section className="py-20 h-[calc(100vh-53px)]">
       <div className="container mx-auto px-4 h-full">
         <div 
-          className="w-full h-full border border-[var(--terminal-border)] rounded-lg overflow-hidden font-mono text-sm shadow-lg backdrop-blur-md"
+          className="w-full h-full border border-[var(--terminal-border)] rounded-lg overflow-hidden font-mono text-sm backdrop-blur-md bg-[var(--terminal-bg)]"
           onClick={handleTerminalClick}
-          style={{
-            backgroundColor: themeStyles.terminalBg,
-            backdropFilter: 'blur(10px)',
-            boxShadow: themeStyles.glow,
-          }}
+          style={{ boxShadow: 'var(--terminal-glow)' }}
         >
           <div className="h-full flex flex-col">
             <div 
-              className="h-7 flex items-center justify-between px-4"
-              style={{
-                backgroundColor: themeStyles.headerBg,
-                backdropFilter: 'blur(5px)',
-              }}
+              className="h-7 flex items-center justify-between px-4 bg-[var(--terminal-header-bg)] backdrop-blur-sm"
             >
               <div className="flex space-x-2">
                 <div className="w-3 h-3 rounded-full bg-[var(--terminal-error)]"></div>
@@ -184,12 +149,7 @@ export default function Terminal() {
                 <div className="w-3 h-3 rounded-full bg-[var(--terminal-success)]"></div>
               </div>
               <div 
-                className="text-xs text-gray-300 font-medium select-none"
-                style={{
-                  fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif',
-                  fontSize: '11px',
-                  letterSpacing: '0.01em',
-                }}
+                className="text-gray-300 font-medium select-none font-sans text-[11px] tracking-[0.01em]"
               >
                 ronniepyne.com
               </div>
@@ -197,24 +157,13 @@ export default function Terminal() {
             </div>
             <div 
               ref={outputRef}
-              className="flex-1 overflow-y-auto p-4 space-y-2 scroll-smooth text-[var(--terminal-text)] select-text terminal-scrollbar"
-              style={{
-                backgroundImage: 'linear-gradient(to bottom, rgba(41, 46, 66, 0.1) 1px, transparent 1px)',
-                backgroundSize: '100% 8px',
-                backgroundPosition: '0 -4px',
-                userSelect: 'text',
-                WebkitUserSelect: 'text',
-              }}
+              className="flex-1 overflow-y-auto p-4 space-y-2 scroll-smooth text-[var(--terminal-text)] select-text terminal-scrollbar bg-[linear-gradient(to_bottom,var(--terminal-grid-line)_1px,transparent_1px)] bg-[length:100%_8px] bg-[position:0_-4px]"
             >
               <CommandHistory commands={visibleCommands} />
             </div>
             <form 
               onSubmit={handleSubmit} 
-              className="p-4 border-t border-[var(--terminal-border)]"
-              style={{
-                backgroundColor: themeStyles.terminalBg.replace('0.85', '0.8'), // Slightly more transparent for input area
-                backdropFilter: 'blur(5px)',
-              }}
+              className="p-4 border-t border-[var(--terminal-border)] bg-[var(--terminal-input-bg)] backdrop-blur-sm"
             >
               <InputLine
                 ref={inputRef}
