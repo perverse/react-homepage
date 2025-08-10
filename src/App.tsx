@@ -3,6 +3,7 @@ import CyberpunkBackground from '@/components/ui/CyberpunkBackground'
 import AuroraBorealisBackground from '@/components/ui/AuroraBorealisBackground'
 import MatrixBackground from '@/components/ui/MatrixBackground'
 import HexGridBackground from '@/components/ui/HexGridBackground'
+import KelpBackground from '@/components/ui/KelpBackground'
 import { ThemeProvider, useTheme } from '@/contexts/ThemeContext'
 import type { ThemeType } from '@/contexts/ThemeContext'
 import type { ComponentType } from 'react'
@@ -12,6 +13,7 @@ const BackgroundComponentMap: Record<ThemeType, ComponentType> = {
   matrix: MatrixBackground,
   hex: HexGridBackground,
   aurora: AuroraBorealisBackground,
+  kelp: KelpBackground,
 }
 
 function AppContent() {

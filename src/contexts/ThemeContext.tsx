@@ -1,6 +1,7 @@
+/* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useContext, useState, ReactNode, useLayoutEffect } from 'react'
 
-export type ThemeType = 'line' | 'matrix' | 'hex' | 'aurora'
+export type ThemeType = 'line' | 'matrix' | 'hex' | 'aurora' | 'kelp'
 
 interface ThemeColors {
   '--terminal-bg': string
@@ -95,6 +96,26 @@ const themes: Record<ThemeType, ThemeColors> = {
       0 0 64px rgba(255, 255, 255, 0.08)
     `
   }
+  ,
+  kelp: {
+    '--terminal-bg': 'rgba(6, 12, 10, 0.82)',
+    '--terminal-header-bg': 'rgba(10, 18, 16, 0.88)',
+    '--terminal-border': '#1a2b22',
+    '--terminal-text': '#d6f5e1',
+    '--terminal-prompt': '#aef2c9',
+    '--terminal-command': '#8fe3b5',
+    '--terminal-output': '#e4fff2',
+    '--terminal-error': '#ff8a9a',
+    '--terminal-warning': '#ffe08a',
+    '--terminal-success': '#9fe3b0',
+    '--terminal-input-bg': 'rgba(6, 12, 10, 0.76)',
+    '--terminal-grid-line': 'rgba(100, 180, 140, 0.05)',
+    '--terminal-glow': `
+      0 0 16px rgba(40, 180, 120, 0.22),
+      0 0 32px rgba(60, 200, 140, 0.14),
+      0 0 64px rgba(60, 200, 140, 0.08)
+    `
+  }
 };
 
 interface ThemeContextType {
@@ -122,7 +143,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     // Try to get theme from localStorage, default to 'hex' instead of 'line'
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('theme');
-      if (saved && (saved === 'line' || saved === 'matrix' || saved === 'hex' || saved === 'aurora')) {
+  if (saved && (saved === 'line' || saved === 'matrix' || saved === 'hex' || saved === 'aurora' || saved === 'kelp')) {
         return saved as ThemeType;
       }
     }

@@ -4,7 +4,7 @@ interface InputLineProps {
   value: string;
   onChange: (value: string) => void;
   onSubmit: () => void;
-  onKeyDown: (e: React.KeyboardEvent) => void;
+  onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
 export const InputLine = forwardRef<HTMLInputElement, InputLineProps>(

@@ -123,6 +123,15 @@ describe('CommandProcessor', () => {
     });
   });
 
+  describe('Theme command', () => {
+    it('accepts the new kelp theme and calls setTheme', () => {
+      const mock = jest.fn();
+      const output = processCommand('theme kelp', mock);
+      expect(mock).toHaveBeenCalledWith('kelp');
+      expect(output).toContain('Kelp mode');
+    });
+  });
+
   describe('Title command', () => {
     const output = processCommand('title');
 

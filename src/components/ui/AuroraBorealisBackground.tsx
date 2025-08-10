@@ -1,5 +1,10 @@
 import React, { useRef, useEffect } from 'react';
 
+type ExtendedWebGLContextAttributes = WebGLContextAttributes & {
+  powerPreference?: 'default' | 'high-performance' | 'low-power';
+  desynchronized?: boolean;
+};
+
 // Aurora Borealis WebGL Canvas Background
 const AuroraBorealisBackground: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -30,11 +35,9 @@ const AuroraBorealisBackground: React.FC = () => {
       stencil: false,
       premultipliedAlpha: false,
       preserveDrawingBuffer: false,
-      // @ts-ignore vendor-specific but safe to pass
       powerPreference: 'high-performance',
-      // @ts-ignore experimental hint
       desynchronized: true,
-    } as any) || canvas.getContext('experimental-webgl')) as WebGLRenderingContext | null;
+    } as ExtendedWebGLContextAttributes) || (canvas.getContext('experimental-webgl') as WebGLRenderingContext | null));
     if (!gl) {
       console.warn('WebGL not supported, Aurora background disabled');
       return () => window.removeEventListener('resize', setSize);

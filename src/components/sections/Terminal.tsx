@@ -32,7 +32,7 @@ export default function Terminal() {
     }, 100);
     
     return () => clearTimeout(timer);
-  }, []);
+  }, [setTheme]);
 
   // Auto-scroll to bottom when commands change
   useEffect(() => {
@@ -103,9 +103,9 @@ export default function Terminal() {
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      handleSubmit(e as any);
+      handleSubmit(e as unknown as React.FormEvent);
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
       if (historyIndex < commands.length - 1) {
@@ -169,7 +169,7 @@ export default function Terminal() {
                 ref={inputRef}
                 value={currentInput}
                 onChange={setCurrentInput}
-                onSubmit={() => handleSubmit(new Event('submit') as any)}
+                onSubmit={() => handleSubmit(new Event('submit') as unknown as React.FormEvent)}
                 onKeyDown={handleKeyDown}
               />
             </form>
