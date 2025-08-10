@@ -1,6 +1,6 @@
-import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react'
+import React, { createContext, useContext, useState, ReactNode, useLayoutEffect } from 'react'
 
-export type ThemeType = 'line' | 'matrix' | 'hex'
+export type ThemeType = 'line' | 'matrix' | 'hex' | 'aurora'
 
 interface ThemeColors {
   '--terminal-bg': string
@@ -75,68 +75,89 @@ const themes: Record<ThemeType, ThemeColors> = {
       0 0 40px rgba(77, 204, 255, 0.15),
       0 0 80px rgba(77, 204, 255, 0.08)
     `
+  },
+  aurora: {
+    '--terminal-bg': 'rgba(12, 12, 14, 0.82)',
+    '--terminal-header-bg': 'rgba(22, 22, 26, 0.88)',
+    '--terminal-border': '#2b2b2f',
+    '--terminal-text': '#e6e7ea',
+    '--terminal-prompt': '#f2f3f5',
+    '--terminal-command': '#d4d5d8',
+    '--terminal-output': '#f7f8fa',
+    '--terminal-error': '#ff8a8a',
+    '--terminal-warning': '#ffd58a',
+    '--terminal-success': '#9fe3b0',
+    '--terminal-input-bg': 'rgba(12, 12, 14, 0.76)',
+    '--terminal-grid-line': 'rgba(235, 235, 240, 0.05)',
+    '--terminal-glow': `
+      0 0 16px rgba(255, 255, 255, 0.22),
+      0 0 32px rgba(255, 255, 255, 0.14),
+      0 0 64px rgba(255, 255, 255, 0.08)
+    `
   }
-}
+};
 
 interface ThemeContextType {
-  currentTheme: ThemeType
-  setTheme: (theme: ThemeType) => void
-  applyTheme: (theme: ThemeType) => void
+  currentTheme: ThemeType;
+  setTheme: (theme: ThemeType) => void;
+  applyTheme: (theme: ThemeType) => void;
 }
 
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
+const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const useTheme = () => {
-  const context = useContext(ThemeContext)
+  const context = useContext(ThemeContext);
   if (!context) {
-    throw new Error('useTheme must be used within a ThemeProvider')
+    throw new Error('useTheme must be used within a ThemeProvider');
   }
-  return context
-}
+  return context;
+};
 
 interface ThemeProviderProps {
-  children: ReactNode
+  children: ReactNode;
 }
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   const [currentTheme, setCurrentTheme] = useState<ThemeType>(() => {
     // Try to get theme from localStorage, default to 'hex' instead of 'line'
     if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('theme')
-      if (saved && (saved === 'line' || saved === 'matrix' || saved === 'hex')) {
-        return saved
+      const saved = localStorage.getItem('theme');
+      if (saved && (saved === 'line' || saved === 'matrix' || saved === 'hex' || saved === 'aurora')) {
+        return saved as ThemeType;
       }
     }
-    return 'hex' // Changed from 'line' to 'hex'
-  })
+    return 'hex';
+  });
 
   const applyTheme = (theme: ThemeType) => {
-    const root = document.documentElement
-    const themeColors = themes[theme]
-    
+    const root = document.documentElement;
+    const themeColors = themes[theme];
+  // Expose theme as an attribute for CSS scoping
+  root.setAttribute('data-theme', theme);
     Object.entries(themeColors).forEach(([property, value]) => {
-      root.style.setProperty(property, value)
-    })
-  }
+      root.style.setProperty(property, value);
+    });
+  };
 
   const setTheme = (theme: ThemeType) => {
-    setCurrentTheme(theme)
-    applyTheme(theme)
-    
+    setCurrentTheme(theme);
+    applyTheme(theme);
     // Save to localStorage
     if (typeof window !== 'undefined') {
-      localStorage.setItem('theme', theme)
+      localStorage.setItem('theme', theme);
     }
-  }
+  };
 
-  // Apply initial theme on mount
-  useEffect(() => {
-    applyTheme(currentTheme)
-  }, [])
+  // Apply initial theme before first paint to avoid FOUC/flicker
+  useLayoutEffect(() => {
+    applyTheme(currentTheme);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <ThemeContext.Provider value={{ currentTheme, setTheme, applyTheme }}>
       {children}
     </ThemeContext.Provider>
-  )
-}
+  );
+};
+

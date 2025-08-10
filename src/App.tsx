@@ -1,5 +1,6 @@
 import Terminal from '@/components/sections/Terminal'
 import CyberpunkBackground from '@/components/ui/CyberpunkBackground'
+import AuroraBorealisBackground from '@/components/ui/AuroraBorealisBackground'
 import MatrixBackground from '@/components/ui/MatrixBackground'
 import HexGridBackground from '@/components/ui/HexGridBackground'
 import { ThemeProvider, useTheme } from '@/contexts/ThemeContext'
@@ -10,6 +11,7 @@ const BackgroundComponentMap: Record<ThemeType, ComponentType> = {
   line: CyberpunkBackground,
   matrix: MatrixBackground,
   hex: HexGridBackground,
+  aurora: AuroraBorealisBackground,
 }
 
 function AppContent() {

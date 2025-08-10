@@ -3,7 +3,7 @@ interface CommandConfig {
   name: string;
   description: string;
   usage: string;
-  execute: (args: string[], setTheme?: (theme: 'line' | 'matrix' | 'hex') => void) => string;
+  execute: (args: string[], setTheme?: (theme: 'line' | 'matrix' | 'hex' | 'aurora') => void) => string;
   hidden?: boolean;
   excludeFromAll?: boolean; // New property to exclude from 'all' command
 }
@@ -187,25 +187,27 @@ I'm always interested in discussing new opportunities and collaborations!`
   theme: {
     name: 'theme',
     description: 'Switch visual theme and background',
-    usage: 'theme [line|matrix|hex]',
+  usage: 'theme [line|matrix|hex|aurora]',
     execute: (args, setTheme) => {
       if (args.length === 0) {
-        return `Available themes:\n• **line** - Cyberpunk city skyline with cyan colors\n• **matrix** - Digital rain with classic Matrix green\n• **hex** - Hexagonal grid with purple/blue neon accents\n\nUsage: **theme line** or **theme matrix** or **theme hex**`;
+        return `Available themes:\n• **line** - Cyberpunk city skyline with cyan colors\n• **matrix** - Digital rain with classic Matrix green\n• **hex** - Hexagonal grid with purple/blue neon accents\n• **aurora** - Aurora Borealis animated background\n\nUsage: **theme line** or **theme matrix** or **theme hex** or **theme aurora**`;
       }
 
       const themeType = args[0].toLowerCase();
 
-      if (themeType !== 'line' && themeType !== 'matrix' && themeType !== 'hex') {
-        return `Invalid theme: ${themeType}\nAvailable themes: **line**, **matrix**, **hex**\n\nUsage: **theme line** or **theme matrix** or **theme hex**`;
+      if (themeType !== 'line' && themeType !== 'matrix' && themeType !== 'hex' && themeType !== 'aurora') {
+        return `Invalid theme: ${themeType}\nAvailable themes: **line**, **matrix**, **hex**, **aurora**\n\nUsage: **theme line** or **theme matrix** or **theme hex** or **theme aurora**`;
       }
 
       if (setTheme) {
-        setTheme(themeType as 'line' | 'matrix' | 'hex');
+        setTheme(themeType as 'line' | 'matrix' | 'hex' | 'aurora');
         return `Theme switched to: **${themeType}**\n\n${themeType === 'matrix' 
   ? 'Welcome to the Matrix... 🟢\nGreen terminal colors and digital rain activated.' 
   : themeType === 'hex'
     ? 'Hex mode engaged ⬡\nPurple/blue neon hex grid activated.'
-    : 'Back to the line cityscape 🏙️\nCyan terminal colors and city skyline activated.'}`;
+    : themeType === 'aurora'
+      ? 'Aurora Borealis mode 🌌\nEnjoy the animated aurora lights!'
+      : 'Back to the line cityscape 🏙️\nCyan terminal colors and city skyline activated.'}`;
       }
 
       return 'Theme switching not available in this context.';
@@ -231,7 +233,7 @@ I'm always interested in discussing new opportunities and collaborations!`
   }
 };
 
-export function processCommand(input: string, setBackground?: (bg: 'line' | 'matrix' | 'hex') => void): string {
+export function processCommand(input: string, setBackground?: (bg: 'line' | 'matrix' | 'hex' | 'aurora') => void): string {
   const [command, ...args] = input.trim().toLowerCase().split(/\s+/);
 
   if (!command) {

@@ -13,6 +13,14 @@
     --terminal-error: #f7768e;
     --terminal-warning: #e0af68;
     --terminal-success: #9ece6a;
+    /* Defaults used before ThemeContext applies runtime vars */
+    --terminal-header-bg: rgba(45, 50, 65, 0.9);
+    --terminal-input-bg: rgba(8, 8, 16, 0.80);
+    --terminal-grid-line: rgba(41, 46, 66, 0.1);
+  /* Default glow (hex-ish) */
+    --terminal-glow: 0 0 20px rgba(41, 46, 66, 0.3),
+      0 0 40px rgba(77, 204, 255, 0.15),
+      0 0 80px rgba(77, 204, 255, 0.08);
   }
 
   .dark {
@@ -27,6 +35,81 @@
     --terminal-success: #9ece6a;
   }
 }
+
+/* Preload theme variables by attribute to avoid initial flicker */
+html[data-theme="line"] {
+  --terminal-bg: rgba(8, 8, 16, 0.85);
+  --terminal-header-bg: rgba(45, 50, 65, 0.9);
+  --terminal-border: #292e42;
+  --terminal-text: #a9b1d6;
+  --terminal-prompt: #7aa2f7;
+  --terminal-command: #7dcfff;
+  --terminal-output: #c0caf5;
+  --terminal-error: #f7768e;
+  --terminal-warning: #e0af68;
+  --terminal-success: #9ece6a;
+  --terminal-input-bg: rgba(8, 8, 16, 0.80);
+  --terminal-grid-line: rgba(41, 46, 66, 0.1);
+  --terminal-glow: 0 0 20px rgba(41, 46, 66, 0.3),
+    0 0 40px rgba(77, 204, 255, 0.15),
+    0 0 80px rgba(77, 204, 255, 0.08);
+}
+
+html[data-theme="matrix"] {
+  --terminal-bg: rgba(2, 8, 2, 0.70);
+  --terminal-header-bg: rgba(5, 15, 5, 0.85);
+  --terminal-border: #1a4d1a;
+  --terminal-text: #00ff41;
+  --terminal-prompt: #00cc33;
+  --terminal-command: #00ff66;
+  --terminal-output: #00dd44;
+  --terminal-error: #ff3333;
+  --terminal-warning: #ffaa00;
+  --terminal-success: #00ff88;
+  --terminal-input-bg: rgba(2, 8, 2, 0.65);
+  --terminal-grid-line: rgba(41, 46, 66, 0.1);
+  --terminal-glow: 0 0 20px rgba(0, 255, 65, 0.2),
+    0 0 40px rgba(0, 255, 65, 0.1),
+    0 0 80px rgba(0, 255, 65, 0.05);
+}
+
+html[data-theme="hex"] {
+  --terminal-bg: rgba(8, 8, 16, 0.85);
+  --terminal-header-bg: rgba(45, 50, 65, 0.9);
+  --terminal-border: #2b2442;
+  --terminal-text: #d6d0ff;
+  --terminal-prompt: #a78bfa;
+  --terminal-command: #8fbafc;
+  --terminal-output: #e2ddff;
+  --terminal-error: #ff6b8f;
+  --terminal-warning: #f1c078;
+  --terminal-success: #8be7a1;
+  --terminal-input-bg: rgba(8, 8, 16, 0.80);
+  --terminal-grid-line: rgba(41, 46, 66, 0.1);
+  --terminal-glow: 0 0 20px rgba(41, 46, 66, 0.3),
+    0 0 40px rgba(77, 204, 255, 0.15),
+    0 0 80px rgba(77, 204, 255, 0.08);
+}
+
+html[data-theme="aurora"] {
+  --terminal-bg: rgba(12, 12, 14, 0.82);
+  --terminal-header-bg: rgba(22, 22, 26, 0.88);
+  --terminal-border: #2b2b2f;
+  --terminal-text: #e6e7ea;
+  --terminal-prompt: #f2f3f5;
+  --terminal-command: #d4d5d8;
+  --terminal-output: #f7f8fa;
+  --terminal-error: #ff8a8a;
+  --terminal-warning: #ffd58a;
+  --terminal-success: #9fe3b0;
+  --terminal-input-bg: rgba(12, 12, 14, 0.76);
+  --terminal-grid-line: rgba(235, 235, 240, 0.05);
+  --terminal-glow: 0 0 16px rgba(255, 255, 255, 0.22),
+    0 0 32px rgba(255, 255, 255, 0.14),
+    0 0 64px rgba(255, 255, 255, 0.08);
+}
+
+/* Removed focus-based aurora pink glow */
 
 @layer base {
   * {

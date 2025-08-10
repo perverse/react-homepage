@@ -224,6 +224,13 @@ export default function CyberpunkBackground() {
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null)
   const materialRef = useRef<THREE.ShaderMaterial | null>(null)
   const animationRef = useRef<number | null>(null)
+  const pixelRatioRef = useRef<number>(1)
+  const renderScaleRef = useRef<number>(0.95) // adaptive 0.6..1.0
+  const targetFpsRef = useRef<number>(60)
+  const lastDrawRef = useRef<number>(0)
+  const framesRef = useRef<number>(0)
+  const lastFpsCheckRef = useRef<number>(0)
+  const highFpsSecondsRef = useRef<number>(0)
 
   useEffect(() => {
     const container = containerRef.current!
@@ -237,23 +244,28 @@ export default function CyberpunkBackground() {
     const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 10)
     camera.position.z = 1
 
-    // Renderer setup
+    // Renderer setup (disable MSAA; use adaptive pixel ratio)
     const renderer = new THREE.WebGLRenderer({ 
-      antialias: true, 
+      antialias: false,
       alpha: false,
-      powerPreference: "high-performance"
+      powerPreference: "high-performance",
+      preserveDrawingBuffer: false,
+      stencil: false,
+      depth: false
     })
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-    renderer.setSize(width, height)
+    const basePR = Math.min(window.devicePixelRatio || 1, 1.5)
+    pixelRatioRef.current = basePR * renderScaleRef.current
+    renderer.setPixelRatio(pixelRatioRef.current)
+  renderer.setSize(width, height, true)
     renderer.setClearColor(0x0d0d1a, 1) // Dark background fallback
     rendererRef.current = renderer
     container.appendChild(renderer.domElement)
 
     // Create fullscreen quad
     const geometry = new THREE.PlaneGeometry(2, 2)
-    const material = new THREE.ShaderMaterial({
+  const material = new THREE.ShaderMaterial({
       uniforms: {
-        uResolution: { value: new THREE.Vector2(width, height) },
+    uResolution: { value: new THREE.Vector2(width, height) },
         uTime: { value: 0 },
       },
       vertexShader,
@@ -270,26 +282,90 @@ export default function CyberpunkBackground() {
     const onResize = () => {
       const newWidth = window.innerWidth
       const newHeight = window.innerHeight
-      
-      renderer.setSize(newWidth, newHeight)
-      material.uniforms.uResolution.value.set(newWidth, newHeight)
+      const basePR = Math.min(window.devicePixelRatio || 1, 1.5)
+      pixelRatioRef.current = basePR * renderScaleRef.current
+  renderer.setPixelRatio(pixelRatioRef.current)
+  renderer.setSize(newWidth, newHeight, true)
+      // Use drawing buffer size (accounts for pixel ratio) for shader math
+      const dbSize = new THREE.Vector2()
+      renderer.getDrawingBufferSize(dbSize)
+      material.uniforms.uResolution.value.set(dbSize.x, dbSize.y)
     }
     window.addEventListener('resize', onResize)
 
     // Animation loop
     const startTime = performance.now()
+    lastDrawRef.current = startTime
+    lastFpsCheckRef.current = startTime
+
     const animate = () => {
-      const currentTime = performance.now()
-      const elapsed = (currentTime - startTime) / 1000.0
-      
+      const now = performance.now()
+      const delta = now - lastDrawRef.current
+      const minDelta = 1000 / targetFpsRef.current
+      if (delta < minDelta) {
+        animationRef.current = requestAnimationFrame(animate)
+        return
+      }
+
+      const elapsed = (now - startTime) / 1000.0
       if (materialRef.current) {
         materialRef.current.uniforms.uTime.value = elapsed
       }
-      
+
+      // Keep uResolution in sync in case internal size changed due to adaptive scale
+      if (materialRef.current) {
+        const dbSize = new THREE.Vector2()
+        renderer.getDrawingBufferSize(dbSize)
+        materialRef.current.uniforms.uResolution.value.set(dbSize.x, dbSize.y)
+      }
       renderer.render(scene, camera)
+      lastDrawRef.current = now
+
+      // FPS tracking and adaptive quality
+      framesRef.current += 1
+      const sinceCheck = now - lastFpsCheckRef.current
+      if (sinceCheck >= 1000) {
+        const sec = sinceCheck / 1000
+        const fps = framesRef.current / sec
+        framesRef.current = 0
+        lastFpsCheckRef.current = now
+
+        // Adjust internal render scale (0.6..1.0)
+        if (fps < 50 && renderScaleRef.current > 0.6) {
+          renderScaleRef.current = Math.max(0.6, renderScaleRef.current - 0.1)
+          onResize()
+        } else if (fps > 58 && renderScaleRef.current < 1.0) {
+          highFpsSecondsRef.current += 1
+          if (highFpsSecondsRef.current >= 2) {
+            renderScaleRef.current = Math.min(1.0, renderScaleRef.current + 0.05)
+            highFpsSecondsRef.current = 0
+            onResize()
+          }
+        } else {
+          highFpsSecondsRef.current = 0
+        }
+
+        // Adjust FPS target if severely constrained
+        if (fps < 28) targetFpsRef.current = 30
+        else if (fps > 55) targetFpsRef.current = 60
+      }
+
       animationRef.current = requestAnimationFrame(animate)
     }
-    animate()
+    animationRef.current = requestAnimationFrame(animate)
+
+    // Pause when tab is hidden to save power
+    const onVis = () => {
+      const hidden = (document as Document).hidden
+      if (hidden) {
+        if (animationRef.current) cancelAnimationFrame(animationRef.current)
+        animationRef.current = null
+      } else if (!animationRef.current) {
+        lastDrawRef.current = performance.now()
+        animationRef.current = requestAnimationFrame(animate)
+      }
+    }
+    document.addEventListener('visibilitychange', onVis)
 
     // Cleanup
     return () => {
@@ -297,6 +373,7 @@ export default function CyberpunkBackground() {
         cancelAnimationFrame(animationRef.current)
       }
       window.removeEventListener('resize', onResize)
+      document.removeEventListener('visibilitychange', onVis)
       
       if (rendererRef.current) {
         rendererRef.current.dispose()

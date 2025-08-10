@@ -98,7 +98,7 @@ export default function Terminal() {
       const target = e.target as HTMLElement;
       if (target.tagName !== 'SPAN' && target.tagName !== 'PRE' && !target.closest('pre')) {
         e.preventDefault();
-        inputRef.current?.focus();
+    inputRef.current?.focus();
       }
     }
   };
