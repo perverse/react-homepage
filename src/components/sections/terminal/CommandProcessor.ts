@@ -11,25 +11,39 @@ interface CommandConfig {
 // Define project details for easy maintenance
 const PROJECTS = {
   1: {
-    name: "4mation Technologies AI Integration",
+    name: "4mation Technologies - Altus Traffic Safety Portal",
     description: "Leading AI integration projects and improving internal workflows using AWS Bedrock and other AI technologies.",
-    techStack: ["AWS Bedrock", "ChatGPT", "Python", "TypeScript", "React"],
+    techStack: ["AWS ECS", "Terraform", "TypeScript", "React", "Strapi"],
     role: "Full Stack Software Engineer",
     period: "Feb 2024 - Present"
   },
   2: {
     name: "CreditorWatch Microservices Migration",
-    description: "Led the migration of legacy monolith systems to a modern microservice-based AWS architecture, implementing pub/sub for high-throughput data streams.",
+    description: "Migration of legacy monolith systems to a modern microservice-based AWS architecture, implementing pub/sub for high-throughput data streams.",
     techStack: ["AWS", "Microservices", "PHP", "Node.js", "React"],
     role: "Senior Software Engineer",
     period: "Feb 2020 - July 2022"
   },
   3: {
+    name: "Mentally Friendly - Barangaroo Precinct Internal Tools",
+    description: "Developed internal tools and processes for Barangaroo precinct permitting system.",
+    techStack: ["PHP", "Laravel", "JavaScript", "React", "Docker", "AWS"],
+    role: "Lead Backend Developer",
+    period: "Feb 2017 - Feb 2019"
+  },
+  4: {
     name: "Lendlease Barangaroo Digital Signage",
     description: "Developed digital signage DSP system for the Barangaroo development project.",
     techStack: ["PHP", "JavaScript", "React", "AWS"],
     role: "Freelance Developer",
     period: "Dec 2015 - Jun 2016"
+  },
+  5: {
+    name: "Holler - Advertising Campaigns",
+    description: "Developed and managed advertising campaigns for various clients including Audi, Heineken, Reckitt Benckiser and others, focusing on digital media strategies.",
+    techStack: ["PHP", "Laravel", "Symfony", "Zend Framework", "JavaScript", "jQuery", "AWS"],
+    role: "Senior Developer",
+    period: "Dec 2012 - Sept 2014"
   }
 } as const;
 
@@ -91,12 +105,13 @@ const commands: Record<string, CommandConfig> = {
 
 Key Points:
 • Full Stack Engineer with 20+ years of experience in web development
-• Currently at 4mation Technologies, focusing on AI integration and mentoring
+• Previous roles at 4mation Technologies, Creditorwatch, Mentally Friendly and many others
+• Currently focused on AI integration, prompt engineering and mentoring
 • Strong advocate for code quality and best practices
 • Experienced in both technical leadership and hands-on development
 • Passionate about leveraging AI to improve development workflows
 
-I specialize in architecting and implementing scalable web solutions while mentoring teams and driving technical innovation.`
+I specialize in architecting and implementing scalable web solutions while mentoring developers and driving technical innovation.`
   },
   skills: {
     name: 'skills',
@@ -111,7 +126,7 @@ Languages & Core Technologies:
 
 Frameworks & Libraries:
 • Laravel 3-5, Symfony 2-5, Zend Framework, codeigniter, wordpress, Silverstripe
-• React, Angular, Vue.js, Next.js
+• React, Angular, Vue.js, Next.js, Tailwind
 • Express, Sails.js, Django, Strapi
 • Bootstrap, jQuery
 
@@ -122,7 +137,7 @@ Infrastructure & DevOps:
 • PHP-FPM, NodeJS, Memcache, Beanstalkd
 
 Modern Development Tools:
-• Git, VSCode, Docker
+• Git, VSCode, Docker, Cursor
 • ChatGPT, Github CoPilot
 • LLMs & Generative AI
 • Webpack, Vite, npm, yarn
@@ -130,8 +145,7 @@ Modern Development Tools:
 Methodologies:
 • Agile Development
 • Microservices Architecture
-• Test-Driven Development
-• DevOps Practices`
+• Test-Driven Development`
   },
   projects: {
     name: 'projects',
